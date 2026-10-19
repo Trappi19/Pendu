@@ -1,10 +1,10 @@
 ( async ()=>{
 
-    let mot = false
+    let listTouche = []
 
     async function getRandomWord(){
             
-
+        let motPendu = false
         let error = false
 
 
@@ -14,20 +14,43 @@
                 error = res.status
             }
             res = await res.json()
-            mot = res[0]?.name ?? false
+            motPendu = res[0]?.name ?? false
+            
     
         }catch(e){
             error = e
         }
 
-        if(error && !mot){
+        if(error && !motPendu){
             console.error(error)
             return
         }
 
-        return mot
+        return motPendu
     }
 
-    console.log(await getRandomWord())
+    async function startGame(){
+        let motPendu = await getRandomWord()
+        if(!motPendu) return
+
+        motPendu = motPendu.toLowerCase()
+        console.log(motPendu)
+
+        addEventListener('keydown', (e)=>{
+            let touche = e.key.toLowerCase()
+            listTouche.push(touche)
+
+            if(motPendu.includes(touche)){
+                console.log('correct')
+            }
+        })
+    }
+
+    
+    startGame()
+
+
+
+
 
 })()
