@@ -1,164 +1,254 @@
 :root {
-    --nuit: #0b0b12;
-    --violet: #1a1424;
-    --brume: #3a2a4d;
+    --nuit: #050405;
+    --brique: #1a1214;
     --os: #e8e0d0;
+    --peau: #e9c6a0;            /* le stickman : */
+    --chemise: #3f6fb5;
+    --pantalon: #3a3d57;
+    --chaussure: #7a4a22;
+    --cheveux: #3b2412;
     --or: #c9a84c;
-    --sang: #b3121a;        /* change cette seule ligne pour recolorer tout le "sang" */
-    --danger: 0;            /* 0 → 1, piloté par design.js */
-    --mx: 50vw;             /* position souris, piloté par design.js */
+    --sang: #b3121a;            /* change ces 3 lignes pour recolorer tout le "sang" */
+    --sang-vif: #d11a24;
+    --sang-sombre: #4a0508;
+    --danger: 0;                /* 0 → 1, piloté par design.js */
+    --mx: 50vw;                 /* position souris, piloté par design.js */
     --my: 50vh;
 }
 
 body {
     background: var(--nuit);
     color: var(--os);
-    font-family: 'IM Fell English', serif;
+    font-family: 'Special Elite', monospace;
     text-align: center;
     min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* ================= Décor ================= */
+/* ================= Mur du cachot ================= */
 .fond {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(to bottom, var(--nuit) 0%, var(--violet) 100%);
+    background:
+        radial-gradient(ellipse 22% 16% at 14% 30%, rgba(90, 5, 10, .55), transparent),   /* vieilles taches */
+        radial-gradient(ellipse 14% 22% at 83% 62%, rgba(90, 5, 10, .45), transparent),
+        radial-gradient(ellipse 18% 10% at 60% 12%, rgba(90, 5, 10, .4),  transparent),
+        repeating-linear-gradient(0deg,  transparent 0 46px, #000 46px 50px),              /* joints des briques */
+        repeating-linear-gradient(90deg, transparent 0 96px, #000 96px 100px),
+        linear-gradient(to bottom, #1d1416, #0a0708);
 }
 
-.lune {
-    position: absolute; top: 6%; right: 12%;
-    width: 120px; aspect-ratio: 1; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #f4efe0, #cfc7a8 60%, #8f8870);
-    box-shadow: 0 0 60px 20px rgba(232, 224, 208, .25);
-    animation: pulsation 6s ease-in-out infinite alternate;
-}
-@keyframes pulsation {
-    from { box-shadow: 0 0 50px 15px rgba(232, 224, 208, .18); }
-    to   { box-shadow: 0 0 80px 30px rgba(232, 224, 208, .32); }
-}
-
+#sang-fond { position: absolute; inset: 0; width: 100%; height: 100%; }   /* sang persistant */
 #particules { position: absolute; inset: 0; }
 
-/* brume : motif de 1200px répété, décalé d'un motif entier = boucle sans coupure */
-.brume {
-    position: absolute; left: 0; right: 0; bottom: 0; height: 45%;
-    background:
-        radial-gradient(ellipse 380px 110px at 30% 60%, rgba(120, 100, 150, .28), transparent),
-        radial-gradient(ellipse 320px 90px  at 75% 40%, rgba(120, 100, 150, .22), transparent);
-    background-size: 1200px 100%;
-    animation: derive 70s linear infinite;
+/* lueur de feu qui vacille de chaque côté */
+.feu {
+    position: absolute; bottom: -10%; width: 45vw; height: 75vh;
+    background: radial-gradient(ellipse at 50% 100%, rgba(255, 100, 25, .3), transparent 65%);
+    animation: vacille 2.3s steps(1, end) infinite;
 }
-@keyframes derive { to { background-position-x: 1200px; } }
+.feu-g { left: -12vw; }
+.feu-d { right: -12vw; animation-delay: -1.1s; }
+@keyframes vacille {
+    0% { opacity: .9; } 12% { opacity: .6; } 25% { opacity: 1; } 41% { opacity: .7; }
+    57% { opacity: .95; } 73% { opacity: .55; } 88% { opacity: .85; }
+}
+body.victoire .feu { background: radial-gradient(ellipse at 50% 100%, rgba(201, 168, 76, .4), transparent 65%); }
 
-/* se resserre à chaque erreur via --danger */
+/* se resserre et rougit à chaque erreur via --danger */
 .vignette {
     position: absolute; inset: 0;
     background: radial-gradient(ellipse at center,
-        transparent calc(75% - var(--danger) * 45%),
-        rgba(60, 0, 0, calc(.45 + var(--danger) * .5)) 100%);
+        transparent calc(70% - var(--danger) * 50%),
+        rgba(70, 0, 0, calc(.55 + var(--danger) * .4)) 100%);
     transition: background .8s;
 }
 
-/* effet "lampe torche" qui suit la souris */
+/* lampe torche qui suit la souris */
 .torche {
     position: absolute; inset: 0;
-    background: radial-gradient(circle 260px at var(--mx) var(--my), transparent 0%, rgba(0, 0, 0, .55) 100%);
+    background: radial-gradient(circle 280px at var(--mx) var(--my),
+        rgba(255, 140, 60, .08) 0%, transparent 35%, rgba(0, 0, 0, .78) 100%);
 }
 
-/* flash rouge de la défaite (au-dessus de tout) */
-.flash {
-    position: fixed; inset: 0; z-index: 5; pointer-events: none;
-    background: var(--sang); opacity: 0;
+/* grain de pellicule */
+.grain {
+    position: fixed; inset: -50%; z-index: 6; pointer-events: none;
+    opacity: .14; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    animation: grain .6s steps(4) infinite;
 }
+@keyframes grain {
+    0% { transform: translate(0, 0); } 25% { transform: translate(-4%, 3%); }
+    50% { transform: translate(3%, -5%); } 75% { transform: translate(-2%, -3%); }
+}
+
+/* flash rouge de la défaite */
+.flash { position: fixed; inset: 0; z-index: 5; pointer-events: none; background: var(--sang); opacity: 0; }
+
+/* ================= Sang qui coule du plafond ================= */
+#plafond { position: fixed; top: 0; left: 0; right: 0; height: 0; z-index: 3; pointer-events: none; }
+#plafond::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 12px;
+    background: linear-gradient(var(--sang-sombre), transparent);
+    opacity: var(--danger);
+}
+.degout {
+    position: absolute; top: 0; height: 0;
+    background: linear-gradient(var(--sang-sombre), var(--sang) 80%, var(--sang-vif));
+    border-radius: 0 0 50% 50% / 0 0 24px 24px;
+}
+
+/* ================= Sang sur "l'écran" (défaite) : canvas dessiné par design.js ================= */
+#ecran-sang { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
 
 /* ================= Texte ================= */
-.titre {
-    font-family: 'Cinzel Decorative', serif; font-size: 5rem; color: var(--or);
-    letter-spacing: .2em; padding-top: 3rem;
-    text-shadow: 0 0 20px rgba(201, 168, 76, .35);
-}
-
+#scene { padding-top: 2rem; }   /* (plus de titre en haut de page) */
 .mot {
-    font-family: 'Cinzel', serif; font-size: 5.5rem; line-height: 1.4; letter-spacing: .35em;
-    color: var(--os); text-shadow: 0 0 12px rgba(232, 224, 208, .3);
-    transition: text-shadow .6s, color .6s;
+    font-size: 5.5rem; line-height: 1.4; letter-spacing: .3em;
+    color: var(--os); text-shadow: 0 3px 0 #000, 0 0 14px rgba(232, 224, 208, .25);
+    transition: color .6s, text-shadow .6s;
 }
 
-.lettres-utilisees {
-    font-size: 2.4rem; letter-spacing: .4em; color: var(--sang); text-transform: uppercase;
-}
+.lettres-utilisees { font-size: 2.6rem; letter-spacing: .4em; color: var(--sang-vif); text-transform: uppercase;
+                     text-shadow: 0 2px 0 #000; }
 
-/* le texte (le nombre de vies) est écrit par script.js ; le cœur est ajouté ici */
-.vie { font-family: 'Cinzel', serif; font-size: 3rem; line-height: 1.6; color: var(--os); }
-.vie::before { content: '♥ '; color: var(--sang); }
+/* le nombre de vies est écrit par script.js ; le cœur est ajouté ici et bat de plus en plus vite */
+.vie { font-size: 3.4rem; line-height: 1.6; color: var(--os); text-shadow: 0 2px 0 #000; }
+.vie::before {
+    content: '♥ '; display: inline-block; color: var(--sang-vif);
+    animation: battement calc(1.3s - var(--danger) * .9s) ease-in-out infinite;
+}
+@keyframes battement { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.35); } 30% { transform: scale(1); } 45% { transform: scale(1.2); } }
 
 /* ================= Stickman SVG ================= */
-.pendu { display: flex; justify-content: center; }
+.pendu { display: flex; justify-content: center; overflow-x: clip; }
 
-#pendu {
-    width: min(360px, 80vw);
-    stroke: var(--os); stroke-width: 5;
-    /* fond de cachot */
-    background:
-        linear-gradient(rgba(11, 11, 18, .55), rgba(11, 11, 18, .55)),
-        repeating-linear-gradient(0deg, #2a2432 0 38px, #15101c 38px 40px);
-    border: 2px solid var(--brume);
-}
+#pendu { width: min(440px, 85vw, 46vh); overflow: visible; }   /* 46vh : tient dans l'écran sans défiler */
 
-/* le trait se "dessine" : pathLength="1" → dasharray 1 = longueur totale du trait */
+.rebord { stroke: #000; stroke-width: 7; }       /* le sol du cachot */
+
+/* contours épais façon cartoon : un trait noir large + un trait de peau plus fin par-dessus */
+#pendu .contour { stroke: #050405; stroke-width: 22; }
+#pendu .peau    { stroke: var(--peau); stroke-width: 15; }
+#b-tete .contour { stroke-width: 6; }             /* la tête est un anneau, rempli par .peau-tete */
+.peau-tete { fill: var(--peau); stroke: none; opacity: 0; }
+
+/* t-shirt trapu */
+#b-tronc .contour { stroke-width: 47; }
+#pendu .chemise   { stroke: var(--chemise); stroke-width: 40; }
+.col { stroke: #050405; stroke-width: 3.5; opacity: 0; }       /* encolure */
+/* manches (même couleur que le t-shirt) et pantalon */
+#pendu .manche   { stroke: var(--chemise); stroke-width: 15; }
+.jambe .contour  { stroke-width: 25; }
+#pendu .pantalon { stroke: var(--pantalon); stroke-width: 18; }
+
+/* éléments pleins : n'apparaissent pas en "dessin" mais en fondu avec leur partie */
+.main, .chaussure, .cheveux, .nez { opacity: 0; stroke: #050405; stroke-width: 3.5; }
+.main     { fill: var(--peau); }
+.chaussure { fill: var(--chaussure); }
+.cheveux  { fill: var(--cheveux); stroke-width: 3; }
+.nez      { fill: #d9a47a; stroke-width: 2.5; }
+
+/* le trait se "dessine" : --l (longueur du trait) est mesurée par design.js.
+   Trait de longueur --l, puis un vide de 2×--l qui le cache ; en décalant le motif le trait entre peu à peu. */
 .membre {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
+    stroke-dasharray: var(--l, 1) var(--l2, 2);
+    stroke-dashoffset: var(--lo, 1.02);            /* >1×longueur : rien de visible (pas de point avec les bouts arrondis) */
     transition: stroke-dashoffset .9s ease-out;
 }
 .partie.visible .membre { stroke-dashoffset: 0; }
 
-#pendu .menotte { stroke: #8a8a96; stroke-width: 3; opacity: 0; }
-#pendu .chaine  { stroke: #8a8a96; stroke-width: 3; stroke-dasharray: 6 4; opacity: 0; }
-.partie.visible .menotte,
-.partie.visible .chaine { opacity: 1; transition: opacity .9s .5s; }
+/* visage : apparaît avec la tête, puis évolue avec la douleur (data-stade 1 → 3) */
+.visage { opacity: 0; stroke: #050405; stroke-width: 3; }
+.yeux circle { fill: #050405; stroke: none; }
+.yeux .blanc { fill: #fff; stroke: #050405; stroke-width: 2; }
+.yeux-x path { stroke-width: 4; }
+.yeux .sourcil { fill: none; stroke-width: 5; }
+.bouche { fill: none; stroke-width: 4; }
+.bouche-2 { fill: #050405; stroke: none; transform-box: fill-box; transform-origin: center; }
 
-/* sang : aplats unis, volontairement cartoon */
-#sang circle, #flaque { fill: var(--sang); stroke: none; }
+.yeux-2, .yeux-x, .bouche-2 { display: none; }
+#pendu[data-stade="2"] .yeux-1, #pendu[data-stade="3"] .yeux-1,
+#pendu[data-stade="2"] .bouche-1, #pendu[data-stade="3"] .bouche-1 { display: none; }
+#pendu[data-stade="2"] .yeux-2, #pendu[data-stade="3"] .yeux-2,
+#pendu[data-stade="2"] .bouche-2, #pendu[data-stade="3"] .bouche-2 { display: inline; }
+#pendu[data-stade="3"] .bouche-2 { transform: scale(1.5); }
+body.defaite #pendu .yeux-1, body.defaite #pendu .yeux-2 { display: none; }
+body.defaite #pendu .yeux-x { display: inline; }
 
-/* ================= États de jeu ================= */
-.secousse { animation: secousse .5s; }
-@keyframes secousse {
-    20% { transform: translate(-8px, 3px); }
-    40% { transform: translate(7px, -4px); }
-    60% { transform: translate(-5px, 2px); }
-    80% { transform: translate(3px, -1px); }
+/* menottes et chaînes */
+#pendu .menotte { fill: none; stroke: #8a8a96; stroke-width: 4.5; opacity: 0; }
+#pendu .chaine  { stroke: #8a8a96; stroke-width: 4; stroke-dasharray: 6 4; opacity: 0; }
+
+/* plaies : entaille irrégulière + gouttes qui coulent. Le JS (design.js) fabrique le dessin dans chaque .emplacement-plaie.
+   Elles grossissent avec la douleur : petites coupures au début, grosses plaies à la fin. */
+.plaie { opacity: 0; transform-box: view-box; transform-origin: 0 0; transform: scale(.55); }   /* origine = centre de la plaie */
+#pendu[data-stade="2"] .plaie { transform: scale(.9); }
+#pendu[data-stade="3"] .plaie { transform: scale(1.3); }
+
+.levres   { fill: url(#degrade-levres); stroke: #5a060b; stroke-width: 1.6; }
+.entaille { fill: url(#degrade-plaie);  stroke: #1a0102; stroke-width: 1.2; }
+.fente    { fill: none; stroke: #ff5a64; stroke-width: 1.1; opacity: .55; }       /* reflet humide */
+
+/* gouttes : le filet s'allonge/se raccourcit, et une goutte se détache et tombe */
+.dg { fill: url(#degrade-goutte); stroke: none; transform-box: fill-box; transform-origin: 50% 0;
+      animation: suinte 4s ease-in-out infinite alternate; }
+@keyframes suinte { from { transform: scaleY(.55); } to { transform: scaleY(1.25); } }
+.chute { fill: var(--sang-vif); transform-box: fill-box; transform-origin: center;
+         animation: tombe 2.6s ease-in infinite; }
+@keyframes tombe {
+    0%   { transform: translateY(0) scale(.5); opacity: 0; }
+    15%  { opacity: 1; }
+    100% { transform: translateY(34px) scale(1); opacity: 0; }
 }
 
-body.defaite .mot  { color: var(--sang); text-shadow: 0 0 18px rgba(179, 18, 26, .8); }
-body.victoire .mot { color: var(--or);   text-shadow: 0 0 25px rgba(201, 168, 76, .9); }
-body.victoire .brume { opacity: .15; transition: opacity 3s; }
+.partie.visible .peau-tete,
+.partie.visible .visage,
+.partie.visible .main,
+.partie.visible .chaussure,
+.partie.visible .cheveux,
+.partie.visible .nez,
+.partie.visible .col { opacity: 1; transition: opacity .5s .6s; }
+/* #pendu devant : sinon #pendu .menotte (plus prioritaire) empêcherait toujours l'affichage */
+#pendu .partie.visible .menotte,
+#pendu .partie.visible .chaine { opacity: 1; transition: opacity .9s .5s; }
+.partie.visible .plaie  { opacity: 1; transition: opacity .2s 1.1s, transform .6s; }
+
+/* sang et morceaux dans le SVG */
+#flaque { fill: var(--sang); stroke: none; }
+
+/* ================= États de jeu ================= */
+body.defaite .mot  { color: var(--sang-vif); text-shadow: 0 3px 0 #000, 0 0 22px rgba(209, 26, 36, .9); }
+body.victoire .mot { color: var(--or);       text-shadow: 0 3px 0 #000, 0 0 25px rgba(201, 168, 76, .9); }
+body.victoire .vie::before { color: var(--or); }
 
 /* ================= Bouton son + message de fin ================= */
 #btn-son {
     position: fixed; top: 1.5rem; left: 1.5rem; z-index: 2;
-    font-size: 2.4rem; background: none; color: var(--os);
-    border: 1px solid var(--brume); padding: .5rem 1rem; cursor: pointer;
+    font-size: 2.4rem; background: rgba(0, 0, 0, .5); color: var(--os);
+    border: 2px solid #000; padding: .5rem 1rem; cursor: pointer;
 }
 
 #message {
     position: fixed; inset: 0; z-index: 4;
-    display: grid; place-content: center; gap: 2rem;
-    background: rgba(0, 0, 0, .78);
-    font-family: 'Cinzel Decorative', serif;
+    display: grid; place-content: center; gap: 3rem;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, .35), rgba(0, 0, 0, .8));
 }
 #message[hidden] { display: none; }
-#message-texte { font-size: 3.6rem; color: var(--or); line-height: 1.4; }
-#message-texte small { font-size: 2.2rem; color: var(--os); }
-body.defaite #message-texte { color: var(--sang); }
+#message-texte { font-family: 'Nosifer', cursive; font-size: 3.4rem; color: var(--or); line-height: 1.6; text-shadow: 0 4px 0 #000; }
+#message-texte small { font-family: 'Special Elite', monospace; font-size: 2.6rem; color: var(--os); }
+body.defaite #message-texte { color: var(--sang-vif); }
 
 #btn-rejouer {
-    font: inherit; font-size: 2rem; padding: 1rem 3rem;
-    background: var(--violet); color: var(--os);
-    border: 1px solid var(--or); cursor: pointer;
+    font: inherit; font-size: 2.2rem; padding: 1rem 3rem;
+    background: #000; color: var(--os); border: 3px solid var(--sang); cursor: pointer;
 }
 #btn-rejouer:hover { background: var(--sang); }
 
+@media (max-width: 550px) {
+    .mot { font-size: 3.6rem; letter-spacing: .15em; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .brume, .lune, .secousse { animation: none; }
+    .feu, .grain, .vie::before, .dg, .chute { animation: none; }
 }

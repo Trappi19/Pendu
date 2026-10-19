@@ -7,7 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;700&family=IM+Fell+English&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Special+Elite&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/gothique.css">
@@ -20,67 +20,131 @@
     <script src="assets/js/script.js" defer></script>
 </head>
 <body>
-    <!-- décor : tout est derrière le jeu -->
+    <!-- mur du cachot : tout le décor est derrière le jeu -->
     <div class="fond">
-        <div class="lune"></div>
+        <canvas id="sang-fond"></canvas>   <!-- le sang qui reste sur le mur (dessiné par design.js) -->
         <div id="particules"></div>
-        <div class="brume"></div>
+        <div class="feu feu-g"></div>
+        <div class="feu feu-d"></div>
         <div class="vignette"></div>
         <div class="torche"></div>
     </div>
 
-    <h1 class="titre">Écartelé</h1>
+    <!-- le plafond qui saigne (gouttes créées par design.js) -->
+    <div id="plafond"></div>
+
     <button id="btn-son" aria-label="Couper le son">🔊</button>
 
-    <section class="pendu">
-        <svg id="pendu" viewBox="0 0 300 300" fill="none" stroke-linecap="round">
-            <g id="bonhomme">
-                <!-- l'ordre des .partie = l'ordre d'apparition -->
-                <g id="b-tete" class="partie">
-                    <circle class="membre" pathLength="1" cx="150" cy="60" r="22" />
-                </g>
-                <g id="b-tronc" class="partie">
-                    <path class="membre" pathLength="1" d="M150 82 V170" />
-                </g>
-                <g id="b-bras-g" class="partie">
-                    <path class="membre" pathLength="1" d="M150 105 L70 50" />
-                    <circle class="menotte" cx="70" cy="50" r="7" />
-                    <path class="chaine" d="M70 50 L15 15" />
-                </g>
-                <g id="b-bras-d" class="partie">
-                    <path class="membre" pathLength="1" d="M150 105 L230 50" />
-                    <circle class="menotte" cx="230" cy="50" r="7" />
-                    <path class="chaine" d="M230 50 L285 15" />
-                </g>
-                <g id="b-jambe-g" class="partie">
-                    <path class="membre" pathLength="1" d="M150 170 L85 265" />
-                    <circle class="menotte" cx="85" cy="265" r="7" />
-                    <path class="chaine" d="M85 265 L35 288" />
-                </g>
-                <g id="b-jambe-d" class="partie">
-                    <path class="membre" pathLength="1" d="M150 170 L215 265" />
-                    <circle class="menotte" cx="215" cy="265" r="7" />
-                    <path class="chaine" d="M215 265 L265 288" />
-                </g>
-            </g>
+    <!-- #scene = ce qui tremble quand ça tape -->
+    <main id="scene">
+        <section class="pendu">
+            <svg id="pendu" viewBox="0 0 300 300" fill="none" stroke-linecap="round" stroke-linejoin="round" data-stade="0">
+                <defs>
+                    <!-- dégradés des plaies : centre sombre, bords plus clairs (couleur non uniforme) -->
+                    <radialGradient id="degrade-plaie"><stop offset="0" stop-color="#2a0204"/><stop offset=".55" stop-color="#6e0810"/><stop offset="1" stop-color="#a50f18"/></radialGradient>
+                    <linearGradient id="degrade-levres" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0303a"/><stop offset=".5" stop-color="#b3121a"/><stop offset="1" stop-color="#7a0a11"/></linearGradient>
+                    <linearGradient id="degrade-goutte" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a0a11"/><stop offset="1" stop-color="#d11a24"/></linearGradient>
+                </defs>
+                <path class="rebord" d="M-3000 297 H3300" />
 
-            <ellipse id="flaque" cx="150" cy="294" rx="0" ry="5" />
-            <g id="sang"></g>   <!-- les gouttes sont créées par design.js -->
-        </svg>
-    </section>
+                <g id="bonhomme">
+                    <!-- l'ordre des .partie = l'ordre d'apparition (et de dessin : les suivantes passent devant) -->
 
-    <section class="lettres">
-        <p class="mot"></p>
-        <p class="lettres-utilisees"></p>
-        <p class="vie"></p>
-    </section>
+                    <!-- TÊTE : grosse, cheveux en bataille, gros yeux -->
+                    <g id="b-tete" class="partie">
+                        <circle class="contour membre" cx="150" cy="58" r="30" />
+                        <circle class="peau-tete" cx="150" cy="58" r="27" />
+                        <path class="cheveux" d="M121 52 Q118 26 150 26 Q182 26 179 52 Q171 40 160 43 Q152 36 144 43 Q131 38 121 52 Z" />
+                        <circle class="nez" cx="150" cy="67" r="4.5" />
+                        <g class="visage">
+                            <!-- stade 1 : calme -->
+                            <g class="yeux yeux-1">
+                                <circle cx="138" cy="59" r="4.2" /><circle cx="162" cy="59" r="4.2" />
+                                <path class="sourcil" d="M128 50 L146 50 M154 50 L172 50" />
+                            </g>
+                            <!-- stades 2 et 3 : yeux écarquillés, sourcils inquiets -->
+                            <g class="yeux yeux-2">
+                                <circle class="blanc" cx="138" cy="58" r="9" /><circle class="blanc" cx="162" cy="58" r="9" />
+                                <circle cx="140" cy="60" r="3.4" /><circle cx="160" cy="60" r="3.4" />
+                                <path class="sourcil" d="M127 52 L146 43 M154 43 L173 52" />
+                            </g>
+                            <!-- mort : yeux en croix -->
+                            <g class="yeux yeux-x">
+                                <path d="M131 52 L145 66 M145 52 L131 66 M155 52 L169 66 M169 52 L155 66" />
+                            </g>
+                            <path class="bouche bouche-1" d="M139 77 Q150 83 161 77" />
+                            <ellipse class="bouche bouche-2" cx="150" cy="80" rx="7" ry="8" />
+                        </g>
+                        <g class="emplacement-plaie" transform="translate(170 46) rotate(-25)" data-angle="-25"></g>
+                    </g>
+
+                    <!-- TRONC : t-shirt trapu -->
+                    <g id="b-tronc" class="partie">
+                        <path class="contour membre" d="M150 118 V152" />
+                        <path class="chemise membre" d="M150 118 V152" />
+                        <path class="col" d="M138 96 Q150 108 162 96" />
+                        <g class="emplacement-plaie" transform="translate(150 138) rotate(70)" data-angle="70"></g>
+                    </g>
+
+                    <!-- BRAS : manche de t-shirt puis avant-bras nu, main, menotte, chaîne -->
+                    <g id="b-bras-g" class="partie bras">
+                        <path class="contour membre" d="M136 108 L74 57" />
+                        <path class="peau membre" d="M136 108 L74 57" />
+                        <path class="manche membre" d="M136 108 L105 82.5" />
+                        <circle class="main" cx="66" cy="52" r="11" />
+                        <circle class="menotte" cx="80" cy="61" r="12" />
+                        <path class="chaine" d="M70 52 L15 15" />
+                        <g class="emplacement-plaie" transform="translate(112 88) rotate(50)" data-angle="50"></g>
+                    </g>
+                    <g id="b-bras-d" class="partie bras">
+                        <path class="contour membre" d="M164 108 L226 57" />
+                        <path class="peau membre" d="M164 108 L226 57" />
+                        <path class="manche membre" d="M164 108 L195 82.5" />
+                        <circle class="main" cx="234" cy="52" r="11" />
+                        <circle class="menotte" cx="220" cy="61" r="12" />
+                        <path class="chaine" d="M230 52 L285 15" />
+                        <g class="emplacement-plaie" transform="translate(188 88) rotate(-50)" data-angle="-50"></g>
+                    </g>
+
+                    <!-- JAMBES : pantalon, chaussures, menottes aux chevilles -->
+                    <g id="b-jambe-g" class="partie jambe">
+                        <path class="contour membre" d="M145 168 L92 246" />
+                        <path class="pantalon membre" d="M145 168 L92 246" />
+                        <ellipse class="chaussure" cx="84" cy="258" rx="19" ry="10" transform="rotate(-32 84 258)" />
+                        <circle class="menotte" cx="97" cy="238" r="13" />
+                        <path class="chaine" d="M86 246 L35 288" />
+                        <g class="emplacement-plaie" transform="translate(122 206) rotate(34)" data-angle="34"></g>
+                    </g>
+                    <g id="b-jambe-d" class="partie jambe">
+                        <path class="contour membre" d="M155 168 L208 246" />
+                        <path class="pantalon membre" d="M155 168 L208 246" />
+                        <ellipse class="chaussure" cx="216" cy="258" rx="19" ry="10" transform="rotate(32 216 258)" />
+                        <circle class="menotte" cx="203" cy="238" r="13" />
+                        <path class="chaine" d="M214 246 L265 288" />
+                        <g class="emplacement-plaie" transform="translate(178 206) rotate(-34)" data-angle="-34"></g>
+                    </g>
+                </g>
+
+                <ellipse id="flaque" cx="150" cy="296" rx="0" ry="6" />
+                <g id="sang"></g>   <!-- morceaux (viscères, os) créés par design.js -->
+            </svg>
+        </section>
+
+        <section class="lettres">
+            <p class="mot"></p>
+            <p class="lettres-utilisees"></p>
+            <p class="vie"></p>
+        </section>
+    </main>
 
     <div id="message" hidden>
         <p id="message-texte"></p>
         <button id="btn-rejouer">Rejouer</button>
     </div>
 
+    <canvas id="ecran-sang"></canvas>   <!-- sang qui gicle sur "l'écran" (devant) -->
     <div class="flash"></div>
+    <div class="grain"></div>
 </body>
 
 </html>
