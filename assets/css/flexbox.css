@@ -1,0 +1,48 @@
+.flexbox{
+    display: flex;
+}
+
+.h-vh{
+    height: 100vh;
+    gap:1rem;
+    align-items: start;
+    flex-flow: wrap;
+
+    div{
+        background-color: aqua;
+        flex:0 1 auto;
+        
+
+        
+    }
+}
+
+.exo{
+    gap:1rem;
+    flex-flow: row wrap;
+    justify-content: start;
+    background-color: lightgrey;
+   height: 100vh;
+   align-items: center;
+
+
+
+
+    div{
+        height: 100px;
+        aspect-ratio: 1;
+        background-color: red;
+        text-align: center;
+        align-content: center;
+
+        &:first-child{
+            align-self: end;
+            order:-2;
+        }
+
+        &:last-child{
+            align-self: start;
+            order:-1;
+        }
+    }
+}
