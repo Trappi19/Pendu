@@ -1,5 +1,7 @@
 ( async ()=>{
 
+    
+
     let listToucheContainer = document.querySelector('.lettres')
     let listToucheUtilisee = document.querySelector('.lettres-utilisees')
     let zoneVie = document.querySelector('.vie')
@@ -83,6 +85,7 @@
                 zoneMot.textContent = tirets.join(' ')
 
                 if(!tirets.includes('_')){
+                    confetti();
                     stopGame('Bravo, vous avez gagné ! Le mot était : ' + motPendu)
                 }
             }
