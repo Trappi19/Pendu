@@ -66,8 +66,8 @@ body.victoire .feu { background: radial-gradient(ellipse at 50% 100%, rgba(201, 
 /* lampe torche qui suit la souris */
 .torche {
     position: absolute; inset: 0;
-    background: radial-gradient(circle 280px at var(--mx) var(--my),
-        rgba(255, 140, 60, .08) 0%, transparent 35%, rgba(0, 0, 0, .78) 100%);
+    background: radial-gradient(circle 1000px at var(--mx) var(--my),
+        rgba(255, 140, 60, .25) 0%, transparent 35%, rgba(0, 0, 0, .78) 100%);
 }
 
 /* grain de pellicule */

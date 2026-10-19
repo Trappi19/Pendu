@@ -1,7 +1,5 @@
 ( async ()=>{
 
-    
-
     let listToucheContainer = document.querySelector('.lettres')
     let listToucheUtilisee = document.querySelector('.lettres-utilisees')
     let zoneVie = document.querySelector('.vie')
@@ -105,7 +103,6 @@
 
     
     startGame()
-
 
 
 
