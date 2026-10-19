@@ -1,5 +1,7 @@
 ( async ()=>{
 
+    let listToucheContainer = document.querySelector('.lettres')
+
     let listTouche = []
 
     async function getRandomWord(){
@@ -31,6 +33,13 @@
 
     async function startGame(){
         let motPendu = await getRandomWord()
+        let tirets = []
+        let tailleMot = motPendu.length
+
+        for (let i = 0; i < tailleMot; i++){
+            tirets.push('_')
+        }
+
         if(!motPendu) return
 
         motPendu = motPendu.toLowerCase()
@@ -42,6 +51,9 @@
 
             if(motPendu.includes(touche)){
                 console.log('correct')
+            }
+            else{
+                console.log('incorrect')
             }
         })
     }
