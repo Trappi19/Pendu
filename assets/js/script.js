@@ -1,6 +1,8 @@
 ( async ()=>{
 
     let listToucheContainer = document.querySelector('.lettres')
+    let listToucheUtilisee = document.querySelector('.lettres-utilisees')
+    let vie = document.querySelector('.vie')
 
     let listTouche = []
 
@@ -35,6 +37,7 @@
         let motPendu = await getRandomWord()
         if(!motPendu) return
 
+        motPendu = motPendu.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         motPendu = motPendu.toLowerCase()
         console.log(motPendu)
 
@@ -50,6 +53,8 @@
 
         addEventListener('keydown', (e)=>{
             let touche = e.key.toLowerCase()
+            if(!/^[a-z]$/.test(touche)) return
+            
             listTouche.push(touche)
 
             if(motPendu.includes(touche)){
