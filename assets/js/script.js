@@ -2,7 +2,9 @@
 
     let listToucheContainer = document.querySelector('.lettres')
     let listToucheUtilisee = document.querySelector('.lettres-utilisees')
-    let vie = document.querySelector('.vie')
+    let zoneVie = document.querySelector('.vie')
+
+    jemeurs = new Audio('assets/sounds/jemeurs.mp3')
 
     let listTouche = []
 
@@ -34,11 +36,15 @@
     }
 
     async function startGame(){
+
+        let fin = false
+        let vie = 10
+        zoneVie.textContent = vie
+
         let motPendu = await getRandomWord()
         if(!motPendu) return
 
         motPendu = motPendu.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        motPendu = motPendu.toLowerCase()
         console.log(motPendu)
 
         let tirets = []
@@ -51,11 +57,21 @@
         let zoneMot = document.querySelector('.mot')
         zoneMot.textContent = tirets.join(' ')
 
+        function stopGame(message){
+            fin = true
+            // petit délai pour que le navigateur affiche la dernière lettre avant l'alert
+            setTimeout(() => {
+                alert(message)
+                location.reload()
+            }, 100)
+        }
+
         addEventListener('keydown', (e)=>{
+            if(fin) return
+
             let touche = e.key.toLowerCase()
             if(!/^[a-z]$/.test(touche)) return
-            
-            listTouche.push(touche)
+            if(listTouche.includes(touche) || tirets.includes(touche)) return
 
             if(motPendu.includes(touche)){
                 console.log('correct')
@@ -65,9 +81,21 @@
                     }
                 }
                 zoneMot.textContent = tirets.join(' ')
+
+                if(!tirets.includes('_')){
+                    stopGame('Bravo, vous avez gagné ! Le mot était : ' + motPendu)
+                }
             }
             else{
                 console.log('incorrect')
+                listTouche.push(touche)
+                listToucheUtilisee.textContent = listTouche.join(' ')
+                vie--
+                zoneVie.textContent = vie
+                jemeurs.play()
+                if(vie <= 0){
+                    stopGame('Vous avez perdu ! Le mot était : ' + motPendu)
+                }
             }
         })
     }
