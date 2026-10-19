@@ -33,6 +33,11 @@
 
     async function startGame(){
         let motPendu = await getRandomWord()
+        if(!motPendu) return
+
+        motPendu = motPendu.toLowerCase()
+        console.log(motPendu)
+
         let tirets = []
         let tailleMot = motPendu.length
 
@@ -40,10 +45,8 @@
             tirets.push('_')
         }
 
-        if(!motPendu) return
-
-        motPendu = motPendu.toLowerCase()
-        console.log(motPendu)
+        let zoneMot = document.querySelector('.mot')
+        zoneMot.textContent = tirets.join(' ')
 
         addEventListener('keydown', (e)=>{
             let touche = e.key.toLowerCase()
@@ -51,6 +54,12 @@
 
             if(motPendu.includes(touche)){
                 console.log('correct')
+                for (let i = 0; i < tailleMot; i++){
+                    if(motPendu[i] == touche){
+                        tirets[i] = touche
+                    }
+                }
+                zoneMot.textContent = tirets.join(' ')
             }
             else{
                 console.log('incorrect')
