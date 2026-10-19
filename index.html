@@ -3,23 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Écartelé</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;700&family=IM+Fell+English&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/gothique.css">
+
+    <!-- l'ordre compte : defer les exécute dans l'ordre, design.js doit passer AVANT script.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/slim@3.5.0/tsparticles.slim.bundle.min.js" defer></script>
+    <script src="assets/js/design.js" defer></script>
     <script src="assets/js/script.js" defer></script>
 </head>
 <body>
-    <section class="pendu">
+    <!-- décor : tout est derrière le jeu -->
+    <div class="fond">
+        <div class="lune"></div>
+        <div id="particules"></div>
+        <div class="brume"></div>
+        <div class="vignette"></div>
+        <div class="torche"></div>
+    </div>
 
+    <h1 class="titre">Écartelé</h1>
+    <button id="btn-son" aria-label="Couper le son">🔊</button>
+
+    <section class="pendu">
+        <svg id="pendu" viewBox="0 0 300 300" fill="none" stroke-linecap="round">
+            <g id="bonhomme">
+                <!-- l'ordre des .partie = l'ordre d'apparition -->
+                <g id="b-tete" class="partie">
+                    <circle class="membre" pathLength="1" cx="150" cy="60" r="22" />
+                </g>
+                <g id="b-tronc" class="partie">
+                    <path class="membre" pathLength="1" d="M150 82 V170" />
+                </g>
+                <g id="b-bras-g" class="partie">
+                    <path class="membre" pathLength="1" d="M150 105 L70 50" />
+                    <circle class="menotte" cx="70" cy="50" r="7" />
+                    <path class="chaine" d="M70 50 L15 15" />
+                </g>
+                <g id="b-bras-d" class="partie">
+                    <path class="membre" pathLength="1" d="M150 105 L230 50" />
+                    <circle class="menotte" cx="230" cy="50" r="7" />
+                    <path class="chaine" d="M230 50 L285 15" />
+                </g>
+                <g id="b-jambe-g" class="partie">
+                    <path class="membre" pathLength="1" d="M150 170 L85 265" />
+                    <circle class="menotte" cx="85" cy="265" r="7" />
+                    <path class="chaine" d="M85 265 L35 288" />
+                </g>
+                <g id="b-jambe-d" class="partie">
+                    <path class="membre" pathLength="1" d="M150 170 L215 265" />
+                    <circle class="menotte" cx="215" cy="265" r="7" />
+                    <path class="chaine" d="M215 265 L265 288" />
+                </g>
+            </g>
+
+            <ellipse id="flaque" cx="150" cy="294" rx="0" ry="5" />
+            <g id="sang"></g>   <!-- les gouttes sont créées par design.js -->
+        </svg>
     </section>
+
     <section class="lettres">
         <p class="mot"></p>
         <p class="lettres-utilisees"></p>
         <p class="vie"></p>
-
     </section>
+
+    <div id="message" hidden>
+        <p id="message-texte"></p>
+        <button id="btn-rejouer">Rejouer</button>
     </div>
 
-    
+    <div class="flash"></div>
 </body>
 
 </html>
